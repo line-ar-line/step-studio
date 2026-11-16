@@ -39,6 +39,7 @@ import {
   X,
 } from "lucide-react";
 import { importStep, validateFile } from "./lib/import-step";
+import ViewCube from "./components/ViewCube";
 import type { StepViewer } from "./viewer/StepViewer";
 import type {
   DisplayMode,
@@ -574,37 +575,10 @@ export default function App() {
                 <span> / </span>毫米
               </p>
             </div>
-            <div className="view-cube" aria-label="快捷视角">
-              <button
-                className="cube-top"
-                title="俯视 (3)"
-                onClick={() => viewerRef.current?.setView("top")}
-              >
-                上
-              </button>
-              <button
-                className="cube-front"
-                title="前视 (2)"
-                onClick={() => viewerRef.current?.setView("front")}
-              >
-                前
-              </button>
-              <button
-                className="cube-right"
-                title="右视 (4)"
-                onClick={() => viewerRef.current?.setView("right")}
-              >
-                右
-              </button>
-              <button
-                className="cube-home"
-                aria-label="等轴测视图"
-                title="等轴测 (1)"
-                onClick={() => viewerRef.current?.setView("iso")}
-              >
-                <RotateCcw size={13} />
-              </button>
-            </div>
+            <ViewCube
+              disabled={!model}
+              onViewChange={(view) => viewerRef.current?.setView(view)}
+            />
             {!model && !busy ? (
               <div className="empty-view">
                 <FileBox size={42} strokeWidth={1} />
