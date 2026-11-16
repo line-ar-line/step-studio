@@ -48,6 +48,26 @@ npm run preview
 
 生产环境须能正确返回 `.wasm` 文件，建议 Content-Type 为 `application/wasm`。应用采用相对资源路径，支持放在站点子目录中。Worker 从同源加载；如果站点设置 CSP，需允许同源 Worker、脚本和 WebAssembly 编译。
 
+### GitHub Pages
+
+站点地址：[STEP Studio 网页预览](https://line-ar-line.github.io/step-studio/)。
+
+源码和部署统一使用公开仓库 `line-ar-line/step-studio`。站点发布 `dist/` 网页构建产物，用户打开的 STEP 文件在浏览器本地处理；随站点提供的只有项目自带示例。
+
+仓库的 Pages 发布源设置为 **Deploy from a branch → gh-pages → / (root)**。更新网页时在本机运行：
+
+```bash
+npm run deploy:pages
+```
+
+发布脚本会检查 TypeScript、按 `/step-studio/` 子路径构建，核对 Worker / WASM / 示例资源，然后在临时克隆中更新 `gh-pages` 分支。GitHub Pages 检测到分支更新后自动发布。脚本复用本机 Git 登录，不需要额外部署密钥。首次在其他电脑发布前，需先配置好 GitHub 的 Git 推送权限。
+
+本地复现 Pages 路径构建：
+
+```bash
+pnpm run build --base /step-studio/
+```
+
 只想离线在本机使用构建结果，也可以在项目目录运行：
 
 ```bash
@@ -61,7 +81,7 @@ python3 -m http.server 4173 --bind 127.0.0.1 --directory dist
 | 目标 | 实现方式 | 当前状态 |
 | --- | --- | --- |
 | 本机预览 | 本机 HTTP 服务 + 浏览器 | 已实现，模型在本机解析 |
-| 网页预览 | 部署同一份 `dist/`，浏览器选择本地文件 | 可直接部署，尚未发布到公网 |
+| 网页预览 | GitHub Pages 托管 `dist/`，浏览器选择本地文件 | 已配置 Pages 发布，见上方站点链接 |
 | 独立桌面软件 | Tauri / Electron 包装当前界面 | 后续扩展，需要额外实现文件关联、安装包和平台测试 |
 | 大型装配体在线预览 | 服务端 OCCT / FreeCAD 转换为 GLB，再由网页加载 | 后续扩展，当前没有转换服务器 |
 
@@ -92,6 +112,7 @@ public/
   samples/                   可直接使用的真实 STEP 示例
 scripts/
   copy-occt.mjs               复制 WASM 和胶水 JS
+  deploy-pages.mjs            构建网页并推送 gh-pages 发布分支
   generate_sample.py         可重复生成示例几何
 tests/
   step-import.test.mjs        真实 OCCT 解析集成测试
@@ -124,7 +145,7 @@ npm run build
 - 文件上限 100 MB 是输入限制，不代表 100 MB 模型一定能流畅预览。STEP 解码、三角化和 WebGL 显存开销都可能远大于原文件，复杂装配体尤其如此。
 - Worker 保护界面响应；几何构建和边线提取仍在主线程，极大网格可能短暂卡顿。
 - 透明度按普通 Three.js 材质处理，复杂相交透明零件可能有排序问题。
-- 需要支持 WebGL 2 / WebAssembly / Web Worker 的现代浏览器。独立桌面打包和公网部署尚未执行。
+- 需要支持 WebGL 2 / WebAssembly / Web Worker 的现代浏览器。网页通过 GitHub Pages 发布，独立桌面打包尚未执行。
 
 ## 依赖与许可
 

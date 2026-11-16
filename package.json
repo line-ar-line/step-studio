@@ -10,6 +10,7 @@
     "prebuild": "node scripts/copy-occt.mjs",
     "build": "tsc -b && vite build",
     "preview": "vite preview --host 127.0.0.1",
+    "deploy:pages": "node scripts/deploy-pages.mjs",
     "sample": "python3 scripts/generate_sample.py",
     "test": "node --test tests/*.test.mjs",
     "format": "prettier --write src vite.config.ts scripts/*.mjs tests/*.mjs"
